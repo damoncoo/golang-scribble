@@ -4,7 +4,6 @@ package scribble
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -115,7 +114,7 @@ func (d *Driver) Write(collection, resource string, v interface{}) error {
 	}
 
 	// write marshaled data to the temp file
-	if err := ioutil.WriteFile(tmpPath, b, 0644); err != nil {
+	if err := os.WriteFile(tmpPath, b, 0644); err != nil {
 		return err
 	}
 
@@ -145,7 +144,7 @@ func (d *Driver) Read(collection, resource string, v interface{}) error {
 	}
 
 	// read record from database
-	b, err := ioutil.ReadFile(record + ".json")
+	b, err := os.ReadFile(record + ".json")
 	if err != nil {
 		return err
 	}
@@ -173,7 +172,7 @@ func (d *Driver) ReadAll(collection string) ([]string, error) {
 
 	// read all the files in the transaction.Collection; an error here just means
 	// the collection is either empty or doesn't exist
-	files, _ := ioutil.ReadDir(dir)
+	files, _ := os.ReadDir(dir)
 
 	// the files read from the database
 	var records []string
@@ -181,7 +180,7 @@ func (d *Driver) ReadAll(collection string) ([]string, error) {
 	// iterate over each of the files, attempting to read the file. If successful
 	// append the files to the collection of read files
 	for _, file := range files {
-		b, err := ioutil.ReadFile(filepath.Join(dir, file.Name()))
+		b, err := os.ReadFile(filepath.Join(dir, file.Name()))
 		if err != nil {
 			return nil, err
 		}
@@ -224,7 +223,6 @@ func (d *Driver) Delete(collection, resource string) error {
 	return nil
 }
 
-//
 func stat(path string) (fi os.FileInfo, err error) {
 
 	// check for dir, if path isn't a directory check to see if it's a file
